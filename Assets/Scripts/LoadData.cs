@@ -30,17 +30,17 @@ public static class LoadData
 
                 // Application.Exit();
             }
-            //else
-            //{
+            else
+            {
 
-            //// フォマードチェック
-            //MessageBox.Show("姉御に連絡して！ エクセルのフォマードが対応していません。",
-            //                "残念でした",
-            //                MessageBoxButtons.OK,
-            //                MessageBoxIcon.Exclamation);
+                // フォマードチェック
+                //MessageBox.Show("姉御に連絡して！ エクセルのフォマードが対応していません。",
+                //                "残念でした",
+                //                MessageBoxButtons.OK,
+                //                MessageBoxIcon.Exclamation);
 
-            //Environment.Exit(1);
-            //}
+                //Environment.Exit(1);
+            }
 
             // RowDataのリストを作る
             var rowDataList = new List<RowData>();

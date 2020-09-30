@@ -29,9 +29,153 @@ public class CanvasManager : MonoBehaviour
     public int QuestionNumber { get; set; } = 1;
 
 
-    // Functions
+    /// <summary>
+    /// 回答ボタン
+    /// </summary>
+    public void OnAnswerButtonClick()
+    {
+        try
+        {
+            // 答えをtbxAnswerにロードする
+            // tbxAnswer.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Answer).FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            // MessageBox.Show("エラー: " + ex.Message,
+            //                 "姉御に連絡して！",
+            //                 MessageBoxButtons.OK,
+            //                 MessageBoxIcon.Exclamation);
+            throw ex;
+        }
+    }
 
+    /// <summary>
+    /// 次へボタン
+    /// </summary>
+    public void OnNextButtonClick()
+    {
+        try
+        {
+            // TODO もっときれいな書き方があるはず
+            // もしCurrentRowNumberが最後なら、リセットする
+            if (CurrentRowNumber != RowDataList.Last().RowNumber)
+            {
+                // 次のRowNumberを取得
+                CurrentRowNumber = RowDataList.SkipWhile(row => row.RowNumber != CurrentRowNumber).Skip(1).First().RowNumber;
 
+                // 次の問題をロードする
+                // tbxQuestion.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
+
+                // チェックボックスを更新する
+                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
+            }
+            else
+            {
+                // 最初の問題のIDを更新する
+                CurrentRowNumber = RowDataList.First().RowNumber;
+
+                // 最初の問題をロードする
+                // tbxQuestion.Text = RowDataList.First().Question; ;
+
+                // 最初の印をロードする
+                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.First().ShouldReview);
+            }
+
+            // tbxAnswerを初期化
+            // tbxAnswer.Text = String.Empty;
+
+            // 問題番号を更新
+            QuestionNumber++;
+            QuestionNumber = QuestionNumber > RowDataList.Count() ? 1 : QuestionNumber;
+            // lbQuestionNumber.Text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
+        }
+        catch (Exception ex)
+        {
+            // MessageBox.Show("エラー: " + ex.Message,
+            //                 "姉御に連絡して！",
+            //                 MessageBoxButtons.OK,
+            //                 MessageBoxIcon.Exclamation);
+            throw ex;
+        }
+    }
+
+    /// <summary>
+    /// 戻るボタン
+    /// </summary>
+    public void OnBackButtonClick()
+    {
+        try
+        {
+            // TODO もっときれいな書き方があるはず
+            // もしCurrentRowNumberが最後なら、リセットする
+            if (CurrentRowNumber != RowDataList.First().RowNumber)
+            {
+                // ロードした問題のIDを更新する
+                CurrentRowNumber = RowDataList.TakeWhile(row => row.RowNumber != CurrentRowNumber).Last().RowNumber;
+
+                // 前の問題をロードする
+                // tbxQuestion.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
+
+                // チェックボックスを更新する
+                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
+            }
+            else
+            {
+                // 最後の問題のIDを更新する
+                CurrentRowNumber = RowDataList.Last().RowNumber;
+
+                // 最後の問題をロードする
+                // tbxQuestion.Text = RowDataList.Last().Question;
+
+                // 最後の印をロードする
+                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Last().ShouldReview);
+            }
+
+            // tbxAnswerを初期化
+            // tbxAnswer.Text = String.Empty;
+
+            // 問題番号を更新
+            QuestionNumber--;
+            QuestionNumber = QuestionNumber <= 0 ? RowDataList.Count() : QuestionNumber;
+            // lbQuestionNumber.Text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
+        }
+        catch (Exception ex)
+        {
+            // MessageBox.Show("エラー: " + ex.Message,
+            //                 "姉御に連絡して！",
+            //                 MessageBoxButtons.OK,
+            //                 MessageBoxIcon.Exclamation);
+            throw ex;
+        }
+    }
+
+    /// <summary>
+    /// 印チェック
+    /// </summary>
+    public void OnShouldReviewChanged()
+    {
+        try
+        {
+            // ListのshouldViewを更新する
+            var currentRow = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).First();
+            // currentRow.ShouldReview = Convert.ToInt32(chkShouldReview.Checked);
+
+            // エクセルを更新する
+            // UpdateData.UpdateShouldReview(CurrentRowNumber, chkShouldReview.Checked, FilePath);
+        }
+        catch (Exception ex)
+        {
+            // MessageBox.Show("エラー: " + ex.Message,
+            //                "姉御に連絡して！",
+            //                MessageBoxButtons.OK,
+            //                MessageBoxIcon.Exclamation);
+            throw ex;
+        }
+    }
+
+    /// <summary>
+    /// 開始ボタン
+    /// </summary>
     public void OnStartButtonClick()
     {
         // 開始パネルを非表示
@@ -100,5 +244,38 @@ public class CanvasManager : MonoBehaviour
 
         // tbxAnswerを初期化
         // tbxAnswer.Text = String.Empty;
+    }
+
+    /// <summary>
+    /// ホームボタン
+    /// </summary>
+    public void OnHomeButtonClick()
+    {
+        // 開始パネルを表示
+        MainMenu.active = true;
+    }
+
+    /// <summary>
+    /// 印の問題のみ表示する
+    /// </summary>
+    public void OnReviewOnlyChanged()
+    {
+        // IsReviewOnlyChcked = chkReviewOnly.Checked;
+    }
+
+    /// <summary>
+    /// 問題をシャルルかどうか
+    /// </summary>
+    public void OnShuffleChanged()
+    {
+        // IsShuffleChecked = chkShuffle.Checked;
+    }
+
+    /// <summary>
+    /// 問題を非表示するかどうか
+    /// </summary>
+    public void OnHideQuestionChanged()
+    {
+        // IsQuestionHidden = chkHideQuestion.Checked;
     }
 }
