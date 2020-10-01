@@ -7,17 +7,17 @@ using UnityEngine.UI;
 
 public class CanvasManager : MonoBehaviour
 {
-    public Text btnText;
-
-
     // Unity Object
     public GameObject MainMenu;
     public GameObject QuestionPanel;
     public Text filePathText;
     public Text questionNumberText;
+    public Text tbxQuestion;
+    public Text tbxAnswer;
     public Toggle hideQuestionToggle;
     public Toggle shuffleToggle;
     public Toggle reviewOnlyToggle;
+    public Toggle shouldReviewToggle;
 
 
     private List<RowData> RowDataList { get; set; }
@@ -37,7 +37,7 @@ public class CanvasManager : MonoBehaviour
         try
         {
             // 答えをtbxAnswerにロードする
-            // tbxAnswer.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Answer).FirstOrDefault();
+            tbxAnswer.text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Answer).FirstOrDefault();
         }
         catch (Exception ex)
         {
@@ -64,10 +64,10 @@ public class CanvasManager : MonoBehaviour
                 CurrentRowNumber = RowDataList.SkipWhile(row => row.RowNumber != CurrentRowNumber).Skip(1).First().RowNumber;
 
                 // 次の問題をロードする
-                // tbxQuestion.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
+                tbxQuestion.text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
 
                 // チェックボックスを更新する
-                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
+                shouldReviewToggle.isOn = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
             }
             else
             {
@@ -75,19 +75,19 @@ public class CanvasManager : MonoBehaviour
                 CurrentRowNumber = RowDataList.First().RowNumber;
 
                 // 最初の問題をロードする
-                // tbxQuestion.Text = RowDataList.First().Question; ;
+                tbxQuestion.text = RowDataList.First().Question; ;
 
                 // 最初の印をロードする
-                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.First().ShouldReview);
+                shouldReviewToggle.isOn = Convert.ToBoolean(RowDataList.First().ShouldReview);
             }
 
             // tbxAnswerを初期化
-            // tbxAnswer.Text = String.Empty;
+            tbxAnswer.text = String.Empty;
 
             // 問題番号を更新
             QuestionNumber++;
             QuestionNumber = QuestionNumber > RowDataList.Count() ? 1 : QuestionNumber;
-            // lbQuestionNumber.Text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
+            questionNumberText.text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
         }
         catch (Exception ex)
         {
@@ -114,10 +114,10 @@ public class CanvasManager : MonoBehaviour
                 CurrentRowNumber = RowDataList.TakeWhile(row => row.RowNumber != CurrentRowNumber).Last().RowNumber;
 
                 // 前の問題をロードする
-                // tbxQuestion.Text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
+                tbxQuestion.text = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.Question).FirstOrDefault();
 
                 // チェックボックスを更新する
-                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
+                shouldReviewToggle.isOn = Convert.ToBoolean(RowDataList.Where(row => row.RowNumber == CurrentRowNumber).Select(row => row.ShouldReview).FirstOrDefault());
             }
             else
             {
@@ -125,19 +125,19 @@ public class CanvasManager : MonoBehaviour
                 CurrentRowNumber = RowDataList.Last().RowNumber;
 
                 // 最後の問題をロードする
-                // tbxQuestion.Text = RowDataList.Last().Question;
+                tbxQuestion.text = RowDataList.Last().Question;
 
                 // 最後の印をロードする
-                // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.Last().ShouldReview);
+                shouldReviewToggle.isOn = Convert.ToBoolean(RowDataList.Last().ShouldReview);
             }
 
             // tbxAnswerを初期化
-            // tbxAnswer.Text = String.Empty;
+            tbxAnswer.text = String.Empty;
 
             // 問題番号を更新
             QuestionNumber--;
             QuestionNumber = QuestionNumber <= 0 ? RowDataList.Count() : QuestionNumber;
-            // lbQuestionNumber.Text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
+            questionNumberText.text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
         }
         catch (Exception ex)
         {
@@ -158,10 +158,10 @@ public class CanvasManager : MonoBehaviour
         {
             // ListのshouldViewを更新する
             var currentRow = RowDataList.Where(row => row.RowNumber == CurrentRowNumber).First();
-            // currentRow.ShouldReview = Convert.ToInt32(chkShouldReview.Checked);
+            currentRow.ShouldReview = Convert.ToInt32(shouldReviewToggle.isOn);
 
             // エクセルを更新する
-            // UpdateData.UpdateShouldReview(CurrentRowNumber, chkShouldReview.Checked, FilePath);
+            UpdateData.UpdateShouldReview(CurrentRowNumber, shouldReviewToggle.isOn, FilePath);
         }
         catch (Exception ex)
         {
@@ -191,10 +191,9 @@ public class CanvasManager : MonoBehaviour
 
             // パスラベルを更新
             filePathText.text = $"ファイルパス: {FilePath}";
-            btnText.text = FilePath;
 
             // 問題一覧の取得
-            RowDataList = LoadData.LoadDataFromExcel(FilePath, false, false);
+            RowDataList = LoadData.LoadDataFromExcel(FilePath, IsReviewOnlyChcked, IsQuestionHidden);
 
             // 問題番号リセットする
             QuestionNumber = 1;
@@ -237,13 +236,13 @@ public class CanvasManager : MonoBehaviour
         CurrentRowNumber = RowDataList.First().RowNumber;
 
         // 一番目の問題をtbxQuestionにロードする
-        // tbxQuestion.Text = RowDataList.First().Question;
+        tbxQuestion.text = RowDataList.First().Question;
 
         // 一番目の印をchkShouldReviewにロードする
-        // chkShouldReview.Checked = Convert.ToBoolean(RowDataList.First().ShouldReview);
+        shouldReviewToggle.isOn = Convert.ToBoolean(RowDataList.First().ShouldReview);
 
         // tbxAnswerを初期化
-        // tbxAnswer.Text = String.Empty;
+        tbxAnswer.text = String.Empty;
     }
 
     /// <summary>
@@ -260,7 +259,7 @@ public class CanvasManager : MonoBehaviour
     /// </summary>
     public void OnReviewOnlyChanged()
     {
-        // IsReviewOnlyChcked = chkReviewOnly.Checked;
+        IsReviewOnlyChcked = reviewOnlyToggle.isOn;
     }
 
     /// <summary>
@@ -268,7 +267,7 @@ public class CanvasManager : MonoBehaviour
     /// </summary>
     public void OnShuffleChanged()
     {
-        // IsShuffleChecked = chkShuffle.Checked;
+        IsShuffleChecked = shuffleToggle.isOn;
     }
 
     /// <summary>
@@ -276,6 +275,6 @@ public class CanvasManager : MonoBehaviour
     /// </summary>
     public void OnHideQuestionChanged()
     {
-        // IsQuestionHidden = chkHideQuestion.Checked;
+        IsQuestionHidden = hideQuestionToggle.isOn;
     }
 }
