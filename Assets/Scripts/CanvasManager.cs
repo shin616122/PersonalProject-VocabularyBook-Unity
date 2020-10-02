@@ -19,7 +19,6 @@ public class CanvasManager : MonoBehaviour
     public Toggle reviewOnlyToggle;
     public Toggle shouldReviewToggle;
 
-
     private List<RowData> RowDataList { get; set; }
     private int CurrentRowNumber { get; set; }
     public string FilePath { get; set; }
@@ -27,7 +26,7 @@ public class CanvasManager : MonoBehaviour
     public bool IsReviewOnlyChcked { get; set; }
     public bool IsQuestionHidden { get; set; }
     public int QuestionNumber { get; set; } = 1;
-
+    private bool firstTime = true;
 
     /// <summary>
     /// 回答ボタン
@@ -176,28 +175,42 @@ public class CanvasManager : MonoBehaviour
     /// <summary>
     /// 開始ボタン
     /// </summary>
-    public void OnStartButtonClick()
+    public void OnStartButtonClick(int flag)
     {
         // 開始パネルを非表示
         MainMenu.active = false;
 
+        if (FilePath != "")
+        {
+            if (flag == 0 && firstTime)
+            {
+                // Load filepath from data path - only when start button is clicked
+                GetFileFromDataPath();
+                firstTime = false;
+            }
+            LoadFileFromPath();
+        }
+        else
+        {
+            //　複数エクセを見つかった場合
+            // MessageBox.Show("エラー: ファイルパスを確認してください",
+            //                 "姉御に連絡して！",
+            //                 MessageBoxButtons.OK,
+            //                 MessageBoxIcon.Exclamation);
+
+            // 強制終了
+            // Application.Exit();
+        }
+    }
+
+    private void GetFileFromDataPath()
+    {
         // 指定ディレクトリ（EXEと同じPath）にある.xlsxを取得
         string[] filePaths = Directory.GetFiles(Application.dataPath, "*.xlsx");
-
         if (filePaths.Length == 1)
         {
             // xlsxパスを変数に保存する
             FilePath = filePaths[0];
-
-            // パスラベルを更新
-            filePathText.text = $"ファイルパス: {FilePath}";
-
-            // 問題一覧の取得
-            RowDataList = LoadData.LoadDataFromExcel(FilePath, IsReviewOnlyChcked, IsQuestionHidden);
-
-            // 問題番号リセットする
-            QuestionNumber = 1;
-            questionNumberText.text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
         }
         else if (filePaths.Length > 1)
         {
@@ -221,6 +234,19 @@ public class CanvasManager : MonoBehaviour
             // 強制終了
             // Application.Exit();
         }
+    }
+
+    public void LoadFileFromPath()
+    {
+        // パスラベルを更新
+        filePathText.text = $"ファイルパス: {FilePath}";
+
+        // 問題一覧の取得
+        RowDataList = LoadData.LoadDataFromExcel(FilePath, IsReviewOnlyChcked, IsQuestionHidden);
+
+        // 問題番号リセットする
+        QuestionNumber = 1;
+        questionNumberText.text = $"問題:{QuestionNumber}/{RowDataList.Count()}";
 
         // chkShuffleにチェック入ったら、問題一覧をシャッフルする
         if (IsShuffleChecked)
@@ -276,5 +302,13 @@ public class CanvasManager : MonoBehaviour
     public void OnHideQuestionChanged()
     {
         IsQuestionHidden = hideQuestionToggle.isOn;
+    }
+
+    /// <summary>
+    ///アプリを閉じる
+    /// </summary>
+    public void OnCloseButtonClick()
+    {
+        Application.Quit();
     }
 }
