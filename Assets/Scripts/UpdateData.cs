@@ -30,7 +30,7 @@ public class UpdateData
         catch (Exception ex)
         {
             // MessageBox.Show("エラー: " + ex.Message,
-            //                "姉御に連絡して！",
+            //                "アドミンに連絡してください！",
             //                MessageBoxButtons.OK,
             //                MessageBoxIcon.Exclamation);
             throw;
